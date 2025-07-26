@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Update</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-blue-50 min-h-screen flex flex-col">
+    <header class="bg-white shadow-md w-full">
+        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between">
+            <h1 class="text-2xl md:text-3xl font-bold text-blue-700 mb-2 md:mb-0">Weather Update</h1>
+            <nav class="flex gap-4">
+                <a href="1st.html" class="bold text-red-500 text-2xl">Home</a>
+                <a href="1st.html" class="bold text-red-500 text-2xl">Weather</a>
+                <a href="2nd.html" class="bold text-red-500 text-2xl">FAQ</a>
+            </nav>
+        </div>
+    </header>
+    <main class="flex-1 flex flex-col items-center justify-center px-4 py-8">
+        <section id="weather" class="w-full max-w-md bg-white rounded-lg shadow-lg p-8 mb-8">
+            <h2 class="text-xl font-semibold text-blue-700 mb-4 text-center">Check Weather by City</h2>
+            <form id="weatherForm" class="flex flex-col gap-4 mb-6">
+                <input type="text" id="cityInput" placeholder="Enter city name" class="px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-200" required>
+                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">Get Weather</button>
+            </form>
+            <div id="weatherResult" class="text-center"></div>
+        </section>
+        <section id="about" class="w-full max-w-md bg-white rounded-lg shadow p-6 mb-8">
+            <h2 class="text-lg font-semibold text-blue-700 mb-2">About This Website</h2>
+            <p class="text-gray-700">On this website lets you check the current weather for any city using live data from OpenWeatherMap. This website is built with HTML, Tailwind CSS, and minimal JavaScript.</p>
+        </section>
+    </main>
+    <footer class="bg-white shadow-inner w-full mt-auto">
+        <div class="container mx-auto px-4 py-6 flex flex-col md:flex-row justify-center items-center">
+            <div class="text-gray-600">made by robin :3</div>
+        </div>
+    </footer>
+    <script>
+        document.getElementById('weatherForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const city = document.getElementById('cityInput').value.trim();
+            if (!city) return;
+            const resultDiv = document.getElementById('weatherResult');
+            resultDiv.textContent = 'Loading...';
+            try {
+                const val="c18df09957f4d01d7b5e2e36b851620c"
+                const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${val}&units=metric`);
+                console.log("output");
+                console.log(res)
+                if (!res.ok) throw new Error('City not found');
+                const data = await res.json();
+                resultDiv.innerHTML = `
+                    <div class="text-2xl font-semibold text-blue-700 mb-2">${data.name}, ${data.sys.country}</div>
+                    <div class="text-lg text-gray-700 mb-2">${data.weather[0].main} - ${data.weather[0].description}</div>
+                    <div class="text-4xl font-bold text-blue-600 mb-2">${data.main.temp}&deg;C</div>
+                    <div class="text-md text-gray-600">Humidity: ${data.main.humidity}% | Wind: ${data.wind.speed} m/s</div>
+                `;
+            } catch (err) {
+                resultDiv.textContent = 'Weather data not found for this city.';
+            }
+        };
+    </script>
+</body>
+</html>
